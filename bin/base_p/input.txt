@@ -1,0 +1,3 @@
+CountTarget=20
+Speed=120
+Time=50

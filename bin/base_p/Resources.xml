@@ -1,0 +1,30 @@
+<?xml version="1.0"?>
+<Resources>
+	<FreeTypeFonts group="WarGroup" upload="false">
+		<font name="arial" family="arial" size="12" color="255;255;255;255" letterSpacing="0">
+			<Effect alpha="0.1" type="shadow" blurX="2" blurY="2" strength="50" angle="0" inner="false" color="255;0;0;255" offset="0"/>
+		</font>
+	</FreeTypeFonts>
+  <Textures group="WarGroup">
+    <texture id="Background" path="textures/war_background"/>
+    <texture id="Bomb" path="textures/bomb" group="WarGroup" upload="false"/>
+    <texture id="SuperBomb" path="textures/super_bomb" group="WarGroup" upload="false"/>
+    <texture id="Aim" path="textures/aim" group="WarGroup" upload="false"/>
+    <texture id="Bullet" path="textures/bullet" group="WarGroup" upload="false"/>
+    <texture id="OneBullet" path="textures/one_bullet" group="WarGroup" upload="false"/>
+    <texture id="LeftGun" path="textures/left_gun" group="WarGroup" upload="false"/>
+    <texture id="Recharge" path="textures/recharge" group="WarGroup" upload="false"/>
+  </Textures>
+  <Textures>
+    <texture id="LoseBackground" path="textures/lose_background"/>
+    <texture id="WinBackground" path="textures/win_background"/>
+    <texture id="Clock" path="textures/clock"/>
+	</Textures>
+  <Sounds group="WarGroup"> 
+    <sample id="MainTheme" path="sound/main_theme.ogg" mode="stream" mix="1" volumeFactor="0.5" pan="0"/>
+    <sample id="WinTheme" path="sound/win_theme.ogg" mode="stream" mix="1" volumeFactor="0.5" pan="0"/>
+    <sample id="LoseTheme" path="sound/lose_theme.ogg" mode="stream" mix="1" volumeFactor="0.5" pan="0"/>
+    <sample id="ShotSound" path="sound/pistol_shot.ogg" mode="cache" mix="1" volumeFactor="1.0" pan="0"/>
+    <sample id="RechargeSound" path="sound/recharge.ogg" mode="cache" mix="1" volumeFactor="1.0" pan="0"/>
+  </Sounds>
+</Resources>

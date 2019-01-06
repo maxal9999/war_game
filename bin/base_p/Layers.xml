@@ -1,0 +1,8 @@
+<?xml version="1.0"?>
+<GUI>
+  <Layer name="WarLayer" background="Background">
+    <Controls>
+      <ShooterWidget name="ShooterWidget" designWidth="1024" designHeight="768"/>
+    </Controls>
+  </Layer>
+</GUI>
