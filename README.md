@@ -1,4 +1,4 @@
-C++ Road signs detector by color and textural features
+C++ WarGame
 =========================
 
 ## Usage
