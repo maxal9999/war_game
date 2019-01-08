@@ -149,4 +149,9 @@ private:
     // Необходимы для определения пределов перемещения мишеней.
 	int mDeltaWidth;
 	int mDeltaHeight;
+
+	// Таймер для расчета времени
+	Core::Timer mObjectTimer;
+	// Предыдущее значение времени
+	float mPrevTime;
 };

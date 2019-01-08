@@ -12,7 +12,8 @@
 #include "ObjectsForShot.h"
 
 // Дискрет времени
-const float TIME_DELTA = 0.03;
+static float TIME_DELTA = 0.03f;
+
 // Коэффициент взаимодействия между мишенями
 const float FORCE_K = 50;
 
@@ -178,6 +179,8 @@ void SuperBomb::Move(float& x, float& y, float& vx, float& vy)
 
 void ObjectsPool::Init(int delta_width, int delta_height)
 {
+	mObjectTimer.Resume();
+
 	auto& inst = InputParser::Instance();
 	mWinWidth = inst.Get(std::string("Width"));
 	mWinHeight = inst.Get(std::string("Height"));
@@ -197,6 +200,10 @@ void ObjectsPool::Init(int delta_width, int delta_height)
         // Заполнение вектора указателей на мишени новым объектом
 		mObjects[i] = IObjectForShot::CreateObject(std::move(point), obj_type);
 	}
+
+	mObjectTimer.Start();
+	TIME_DELTA = 0.03f;
+	mPrevTime = 0.0f;
 }
 
 void ObjectsPool::DeleteDeadObjects()
@@ -228,6 +235,9 @@ void ObjectsPool::CalcCoordinates()
 
 void ObjectsPool::Draw()
 {
+	auto curr_time = mObjectTimer.getElapsedTime();
+	TIME_DELTA = (curr_time - mPrevTime) * 2;
+	mPrevTime = curr_time;
 	CalcCoordinates();
 	for (auto obj_it = mObjects.begin(); obj_it != mObjects.end(); obj_it++)
 	{

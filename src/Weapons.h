@@ -177,6 +177,11 @@ private:
 	Core::Timer mRechargeTimer;
 	bool mIsRecharged;
 
+	// Таймер для расчета времени полета пули
+	Core::Timer mWeaponTimer;
+	// Предыдущее значение времени для расчета полета пули
+	float mPrevTime;
+
     // Ширина главного окна
 	int mWinWidth;
 

@@ -15,7 +15,7 @@
 // угол в 180 градусов
 const float PI_DEGREES = 180.0f;
 // дискрет времени
-const float TIME_DELTA = 0.1f;
+static float TIME_DELTA = 0.1f;
 // ускорение свободного падения
 const float G = 9.81f;
 // сопротивление воздуха (кг / м^3)
@@ -279,6 +279,8 @@ MachineGun::MachineGun() :
 
 void MachineGun::InitBullets(bool restart, bool recharge)
 {
+	mWeaponTimer.Resume();
+
 	if (restart)
 	{
 		mBulletPool.clear();
@@ -303,10 +305,17 @@ void MachineGun::InitBullets(bool restart, bool recharge)
 	for (size_t i = 0; i < bullets_count - current_size; i++)
 		mBulletPool.push_back(std::make_unique<PistolBullet>());
 	mOneBullet = std::make_unique<PistolBullet>();
+	
+	mWeaponTimer.Start();
+	mPrevTime = 0.0f;
 }
 
 void MachineGun::BulletsDraw(ObjectsPool& shot_objects, EffectsContainer& eff_cont)
 {
+	auto curr_time = mWeaponTimer.getElapsedTime();
+	TIME_DELTA = (curr_time - mPrevTime) * 10;
+	mPrevTime = curr_time;
+
 	if (mBulletPool.size() == 0)
 	{
 		Render::device.PushMatrix();
