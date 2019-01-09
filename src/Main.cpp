@@ -9,10 +9,10 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLi
 int main(int argc, const char* argv[])
 #endif
 {
-	ParticleSystem::SetTexturesPath("textures/Particles");
+    ParticleSystem::SetTexturesPath("textures/Particles");
 
 #if defined(ENGINE_TARGET_WIN32)
-	Core::fileSystem.SetWriteDirectory("./write_directory");
+    Core::fileSystem.SetWriteDirectory("./write_directory");
 #else
     Core::fileSystem.SetWriteDirectory(IO::Path::GetSpecialFolderPath(SpecialFolder::LocalDocuments));
 #endif
@@ -28,14 +28,14 @@ int main(int argc, const char* argv[])
     Core::fileSystem.MountDirectory(base_path);
 
     Log::log.AddSink(new Log::DebugOutputLogSink());
-	Log::log.AddSink(new Log::HtmlFileLogSink("log.htm", true));
+    Log::log.AddSink(new Log::HtmlFileLogSink("log.htm", true));
 
 #if defined(ENGINE_TARGET_WIN32)
-	Core::Application::APPLICATION_NAME = MYAPPLICATION_NAME;
-	Core::RunApplicationWithDelegate(new ShooterDelegate());
+    Core::Application::APPLICATION_NAME = MYAPPLICATION_NAME;
+    Core::RunApplicationWithDelegate(new ShooterDelegate());
 #else
-	Core::RunApplicationWithDelegate(argc, argv, new ShooterDelegate());
+    Core::RunApplicationWithDelegate(argc, argv, new ShooterDelegate());
 #endif
-	
-	return 0;
+    
+    return 0;
 }
