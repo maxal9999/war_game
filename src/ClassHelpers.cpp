@@ -1,7 +1,7 @@
 /**
  * \file
- * \brief Имплементация вспомогательных классов
- * \author Максимовский А.С.
+ * \brief Implementation of helper classes
+ * \author Maksimovskiy A.S.
  */
 
 #include "stdafx.h"
@@ -39,7 +39,7 @@ float RandomGenerator::GetRealValue(int min, int max)
 
 InputParser::InputParser()
 {
-    // Вычитываются данные файла
+    // Reading the file data
 	IO::InputStreamPtr stream = Core::fileSystem.OpenRead("input.txt");
 	if (!stream) {
 		IO::FileStreamPtr filestream = new IO::FileStream("input.txt");
@@ -48,16 +48,16 @@ InputParser::InputParser()
 		stream = filestream;
 	}
 
-    // Для удобства поток копируется в вектор символов
+    // The stream is copied to the character vector
 	std::vector<uint8_t> buffer;
 	bool correct = stream->ReadAllBytes(buffer);
 	if (!correct)
 		throw std::runtime_error(std::string("Can't parse file: input.txt"));
 
-    // Формируем мапу из вектора символа.
-    // Вычитываем отдельно каждую строку.
-    // Все символы до '=' - имя параметра, после - значение.
-    // В данной реализации поддерживаются только целочисленные параметры.
+    // Map is formed from the symbols vector.
+    // Each line is read separately.
+    // All characters before '=' are the name of the parameter, after - the value.
+    // Only integer parameters are supported in this implementation.
 	auto begin_it = buffer.begin(), end_it = buffer.end();
 	while (begin_it != end_it) 
 	{
@@ -78,18 +78,18 @@ InputParser::InputParser()
 		mConfig.emplace(parse[0], utils::lexical_cast<int>(parse[1]));
 	}
 
-	// Эти настройки можно задать из input.txt, но пока по умолчанию
-	// Ширина экрана
+	// These settings can be set from input.txt, but for now the default
+	// Screen width
 	if (mConfig.find("Width") == mConfig.end())
 		mConfig.emplace("Width", 1024);
-	// Высота экрана
+	// Screen height
 	if (mConfig.find("Height") == mConfig.end())
 		mConfig.emplace("Height", 768);
 
-	// Число пуль в магазине пушки
+	// The bullets count in the gun
 	if (mConfig.find("BulletCount") == mConfig.end())
 	{
-		int bullet_count = 15; // по умолчанию
+		int bullet_count = 15; // default
 		auto count_target = mConfig.find("CountTarget");
 		if (count_target != mConfig.end())
 			bullet_count = (*count_target).second;
@@ -163,7 +163,7 @@ namespace object_params
 {
 	int InitSize(Render::Texture* tex, float& delta_x, float& delta_y)
 	{
-        // Получаем прямоугольник, соответствующий размерам текстуры
+        // Getting a rectangle corresponding to the size of the texture
 		IRect gun_rect = tex->getBitmapRect();
 		int width = gun_rect.width;
 		int height = gun_rect.height;
@@ -171,7 +171,7 @@ namespace object_params
 		delta_x = width * 0.5f;
 		delta_y = height * 0.5f;
 
-        // По теореме Пифагора рассчитываем приблизительный радиус окружности, описывающую текстуру
+        // According to the Pythagorean theorem, the approximate radius  of a circle describing the texture is calculated
 		return static_cast<int>(sqrt(delta_x * delta_x + delta_y * delta_y));
 	}
 

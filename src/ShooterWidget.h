@@ -3,9 +3,7 @@
 #include "ObjectsForShot.h"
 #include "Weapons.h"
 
-///
-/// Виджет для отрисоки поля битвы.
-///
+// Widget for drawing the battlefield.
 class ShooterWidget : public GUI::Widget
 {
 public:
@@ -26,20 +24,20 @@ public:
 private:
 	void Init();
 
-	// Объекта класса по управлению мишенями
+    // Target management class object
 	ObjectsPool mObjectsPool;
-	// Объекта класса по управлению оружием и пулями
+    // Weapons and bullet class object
 	MachineGun mMachineGun;
 
-	// Таймер
+	// Timer
 	Core::Timer mTimer;
 
-	// Объекты для отрисовки эффектов
+    // Objects for drawing effects
 	EffectsContainer mEffCont;
 
-	// Текстура для отображения часов
+    // Texture to display the clock
 	Render::Texture* mClock;
 
-	// Результат
+	// Battle result
 	boost::optional<bool> mWinLoseResult;
 };

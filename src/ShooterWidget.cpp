@@ -69,7 +69,7 @@ void ShooterWidget::Draw()
 		return;
 	}
 
-	// Отрисовка прямоугольников, в которых будут индикаторы часов и пуль.
+    // Drawing rectangles in which there will be indicators of hours and bullets
 	Render::device.SetTexturing(false);
 	Render::BeginColor(Color("#FFFAFA"));
 	Render::DrawRect(width - 200, 0, 200, 80);
@@ -77,18 +77,18 @@ void ShooterWidget::Draw()
 	Render::EndColor();
 	Render::device.SetTexturing(true);
 
-	// Отрисовка всех мишеней
+    // Drawing all targets
 	mObjectsPool.Draw();
 
-	// Отрисовка оружия
+	// Drawing the weapon
 	mMachineGun.Draw();
-	// Отрисовка пуль
+	// Drawing the bullets
 	mMachineGun.BulletsDraw(mObjectsPool, mEffCont);
 
-	// Удаление всех "убитых" мишеней
+    // Remove all dead targets
 	mObjectsPool.DeleteDeadObjects();
 
-	// Отрисовка числа оставшихся пуль в магазине
+    // Drawing the number of remaining bullets in the gun
 	mMachineGun.DrawOneBullet(width - 180, 25);
 	Render::BindFont("arial");
 	auto b_count = mMachineGun.BulletsCount();
@@ -110,17 +110,12 @@ void ShooterWidget::Draw()
 	mClock->Draw();
 	Render::device.PopMatrix();
 
-	//
-	// Рисуем все эффекты, которые добавили в контейнер (Update() для контейнера вызывать не нужно).
-	//
+    // Draw all the effects that are added to the container
 	mEffCont.Draw();
 }
 
 void ShooterWidget::Update(float dt)
 {
-	//
-	// Обновим контейнер с эффектами
-	//
 	mEffCont.Update(dt);
 }
 
@@ -150,11 +145,11 @@ void ShooterWidget::AcceptMessage(const Message& message)
 
 void ShooterWidget::KeyPressed(int keyCode)
 {
-	// По клавише 'R' происходит перезарядка оружия
+	// Press on the key 'R' to reload weapons
 	if (keyCode == VK_R) 
 		mMachineGun.InitBullets(false, true);
 
-	// По клавише 'B' игра начнется заново
+    // Press on the 'B' key, the game will start again
 	if (keyCode == VK_B)
 	{
 		MM::manager.ChangeTrack("MainTheme", 0.1f);

@@ -2,26 +2,26 @@
 
 /**
  * \file
- * \brief Вспомогательные классы
- * \author Максимовский А.С.
+ * \brief Helper classes
+ * \author Maksimovskiy A.S.
  */
 
 #include <random> 
 
-// Синглтон для генерации случайных целых и вещественных числе
+// Singleton to generate random integers and real numbers
 class RandomGenerator
 {
 public:
-    // Инстанс
+    // Instance
 	static RandomGenerator& Instance();
 
-    // Генерация целых чисел в пределах от min до max
+    // Generating integers from min to max
 	int GenIntValue(int min, int max);
 
-    // Генерация вещественных чисел в пределах от min до max
+    // Generating real numbers from min to max
 	float GetRealValue(int min, int max);
 private:
-    // Параметр для функции распределения
+    // Parameter for the distribution function
 	std::mt19937 mGen;
 
 	RandomGenerator();
@@ -29,44 +29,44 @@ private:
 	RandomGenerator& operator=(RandomGenerator&) = delete;
 };
 
-// Синглтон для получения параметров конфигурации из файла input.txt
+// Singleton to get config params from input.txt
 class InputParser
 {
 public:
-    // Инстанс
+    // Instance
 	static InputParser& Instance();
 
-    // Метод для получения параметров конфигурации.
+    // Method to get config param
 	int Get(const std::string& name);
 private:
 	InputParser();
 	InputParser(const InputParser&) = delete;
 	InputParser& operator=(InputParser&) = delete;
 
-    // Мапа для хранения распарсенных параметров
+    // Map for storing parsed params
 	std::map<std::string, int> mConfig;
 };
 
-// Синглтон для расчетов косинусов и синусов углов
+// Singleton for calculating cosines and sines of corners
 class CosSinCalc
 {
 public:
-	// Инстанс
+	// Instance
 	static CosSinCalc& Instance();
 
-	// Метод для получения косинуса угла
+	// Method to get cos of corner
 	float Cos(int angle);
-	// Метод для получения синуса угла
+	// Method to get sin of corner
 	float Sin(int angle);
 private:
 	CosSinCalc();
 	CosSinCalc(const CosSinCalc&) = delete;
 	CosSinCalc& operator=(CosSinCalc&) = delete;
 
-	// Мапа для хранения косинусов
+	// Map for storing cosines
 	std::map<int, float> mCos;
 
-	// Мапа для хранения синусов
+	// Map for storing sines
 	std::map<int, float> mSin;
 
 	void CorrectAngle(int& angle);
@@ -74,10 +74,10 @@ private:
 
 namespace object_params
 {
-    // Метод для нахождения размера объекта
-	int InitSize(Render::Texture* tex, float& delta_x, float& delta_y);
+    // Method for calculating the size of the object
+    int InitSize(Render::Texture* tex, float& delta_x, float& delta_y);
 
-	// Нахождение угла между векторами
+    // Method for calculating the angle between vectors
 	float VectorsAngle(float x1, float x2, float x3, float x4);
 
 	Render::Texture* GetText(const std::string& name);

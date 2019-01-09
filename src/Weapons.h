@@ -2,8 +2,8 @@
 
 /**
  * \file
- * \brief Классы для описания поведения оружия и пуль
- * \author Максимовский А.С.
+ * \brief Classes to describe the behavior of weapons and bullets
+ * \author Maksimovskiy A.S.
  */
 
 #include <memory>
@@ -11,10 +11,10 @@
 
 #include "ObjectsForShot.h"
 
-// размерность массивов для формулы Рунге-Кутта
+// Dimension of arrays for the Runge - Kutta formula
 const int N_DIM = 4;
 
-// Урон от пули
+// Bullet damage type
 enum class Damage
 {
 	SMALL = 15,
@@ -22,7 +22,7 @@ enum class Damage
 	LARGE = 45
 };
 
-// Угол корректировки. Зависит от наклона пушки на текстуре
+// Angle adjustment. Depends on the inclination of the cannon on the texture.
 enum class AngleCorrect
 {
 	SMALL = 30,
@@ -30,7 +30,7 @@ enum class AngleCorrect
 	LARGE = 60
 };
 
-// Структура, описывающая прицел орудия
+// Gun aim
 struct Aim
 {
 	Render::Texture* mTexture;
@@ -41,165 +41,163 @@ struct Aim
 
 using shared_tex = Render::Texture*;
 
-// Базовая структура описания пули
+// Base structure to describe the bullet
 struct Bullet
 {
 	Bullet();
 
-    // Расчет угла поворота пули и начальных координат
+    // Calculation of the angle of rotation of the bullet and the initial coordinates
 	void CalcAngles(float rotate_angle);
 
-	// Метод для простой отрисовки пули
+    // Method for simple drawing of a bullet
 	void SimpleDraw();
 
-    // Отрисовка пули.
-    // Принимает ссылку на объект вектора объектов.
-    // Необходимо для проверки попадания пули по мишеням
+    // Bullet drawing.
+    // Accepts a link to the object vector object.
 	void Draw(ObjectsPool& shot_objects);
 
-	// Отрисовать все эффекты
+    // Draw all effects
 	void DrawEffects(EffectsContainer& eff_cont);
 
-	// Отрисовать индикатор патронов
+    // Draw ammo indicator
 	void DrawBulletIndicator();
 
-	// Текстура
+	// Bullet texture
 	shared_tex mTexture;
 
-    // Флаг инвертированности.
-    // Необходим для корректировки угла наклона пули и отрисовки.
+    // Inversion flag.
+    // Required to adjust the angle of the bullet and drawing.
 	bool mInvert;
 
-    // Флаг отвечающий за использованность пули.
-    // Если пулей попали по мишени, то она использована
+    // The flag is responsible for the use of bullet.
+    // If a bullet hit the target, it is used.
 	bool mIsUsed;
 
-    // Текущее положение пули
+    // Bullet current position
 	FPoint mCurrentPoint;
 	FPoint mTargetPoint;
 
-    // Угол наклона, под которым произошел выстрел пулей
+    // Tilt angle at which the bullet shot
 	float mSystemAngle;
 
-	// Эффект при полете пули
+	// Bullet fly effect
 	ParticleEffectPtr mFlyEffect;
 
-	// Эффект при полете пули
+	// Bullet hit effect
 	ParticleEffectPtr mHitEffect;
 
-	// Флаг, обозначающий момент выстрела пули
+    // Flag denoting the moment of a bullet shot
 	bool mFirstDraw;
 protected:
-	// Текстура индикатора пули
+    // Bullet indicator texture
 	shared_tex mOneBulletTexture;
 
-	// Корректировка координат
+    // Coordinate adjustment
 	float mDeltaX;
 	float mDeltaY;
 
-    // Скорость пули
+    // Bullet velocity
     int mVelocity;
 
-    // Приблизительный размер пули
+    // Approximate bullet size
 	int mSize;
 
-    // Урон от пули
+    // Bullet damage
 	Damage mDamage;
 
-    // Параметр торможения
+    // Drag param
 	float mCm;
 
-	// Параметр сдвига
+    // Swift param
 	float mKm;
 private:
-    // Массив для хранения данных о предыдущем положении пули
+    // Array to store data about the previous position of the bullet
 	float mXYold[N_DIM];
 
-	// Функция для рассчет коэффициентов методом Рунге-Кутта
+    // Function to calculate the coefficients by the method of Runge - Kutta
 	float* RKFunc(float* xy_old);
 
-	// Метод движения пули
+    // Bullet movement method
 	void Move();
 };
 
-// Вид пуль, используемая в пистолетах
+// Kind of bullets used in pistols
 struct PistolBullet : public Bullet
 {
 	PistolBullet();
 };
 
-// Класс описания оружия
+// Weapon description class
 class MachineGun
 {
 public:
 	MachineGun();
 
-	// Инициализация пуль в магазине
+    // Initialization of bullets in the store
 	void InitBullets(bool restart = false, bool recharge = false);
 
-    // Отрисовка оружия
+    // Drawing weapons
 	void Draw();
 
-    // Отрисовка всех пуль, выпущенных оружием
+    // Drawing all bullets fired
 	void BulletsDraw(ObjectsPool& shot_objects, EffectsContainer& eff_cont);
 	void DrawOneBullet(float x, float y);
 
-    // Метод выстрела из оружия
+    // Gun shot method
 	bool Shot();
 
-    // Размеры оружия
+    // Gun size
 	int Width() noexcept { return mWidth; }
 	int Height() noexcept { return mHeight; }
 
-    // Число пуль в магазине оружия
+    // Bullets count in the gun store
 	size_t BulletsCount();
 private:
-    // Текстура
+    // Gun texture
 	Render::Texture* mTexture;
-	// Текстура сообщения о перезарядке
+    // Recharge message texture
 	Render::Texture* mRechargeTexture;
-    // Прицел
+    // Gun aim
 	Aim mAim;
 
-    // Массив пуль.
-	// Сделано через умные указатели для возможности дальнейшего добавления разнообразия видов пуль
+    // Bullets array.
 	using bullet_ptr = std::unique_ptr<Bullet>;
 	std::vector<bullet_ptr> mBulletPool;
-	// Использованные пули
+    // Used bullets
 	std::vector<bullet_ptr> mUsedBulletPool;
-	// Одна пуля для отрисовки
+    // One bullet for drawing indicator
 	bullet_ptr mOneBullet;
 
-	// Таймер на выстрел. Текущая пушка стреляет раз в 0.5 секунд
+    // Shot timer. The current gun shoots every 0.5 seconds.
 	Core::Timer mShotTimer;
 
-	// Таймер на перезарядку. Перезарядка выполнятся за 2 секунды
+    // Recharge timer. Recharge will be completed in 2 seconds.
 	Core::Timer mRechargeTimer;
 	bool mIsRecharged;
 
-	// Таймер для расчета времени полета пули
+    // Timer for calculating the flight time of the bullet
 	Core::Timer mWeaponTimer;
-	// Предыдущее значение времени для расчета полета пули
+    // Previous time to calculate bullet flight
 	float mPrevTime;
 
-    // Ширина главного окна
+    // Width of the main window
 	int mWinWidth;
 
-    // Размеры оружия
+    // Gun size
 	int mWidth;
 	int mHeight;
 	float mDiagonal;
 
-    // Угол поворота оружия
+    // Angle of the weapon
 	float mRotateAngle;
-    // Флаг инвертированности.
-    // Если он true, то при отрисовке текстура поворачивается относительно оси Oy на 180 градусов
+    // Invert flag.
+    // If it is true, then when drawing the texture is rotated relative to the axis Oy 180 degrees
 	bool mInvert;
-    // Угол корректировки. Зависит от наклона пушки на текстуре
+    // Angle adjustment. Depends on the inclination of the cannon on the texture.
 	int mCorrectAngle;
-    // Положение пушки на оси Ox
+    // Gun position on the axis Ox
 	float mX;
 
-    // Метод для поворота пушки. Угол зависит от положения прицела.
+    // Method to rotate the gun.The angle depends on the position of the aim.
 	void RotateGun();
 };

@@ -1,7 +1,7 @@
-/**
+п»ї/**
  * \file
- * \brief Имплементация классов описания поведения оружия и пуль
- * \author Максимовский А.С.
+ * \brief Implementing classes to describe the behavior of weapons and bullets
+ * \author Maksimovskiy A.S.
  */
 
 #include "stdafx.h"
@@ -12,19 +12,19 @@
 #include "ClassHelpers.h"
 #include "Weapons.h"
 
-// угол в 180 градусов
+// 180 degree angle
 const float PI_DEGREES = 180.0f;
-// дискрет времени
+// Time discrete
 static float TIME_DELTA = 0.1f;
-// ускорение свободного падения
+// Acceleration of gravity
 const float G = 9.81f;
-// сопротивление воздуха (кг / м^3)
+// Air resistance (kg / m ^ 3)
 const float RHO = 1.23;
 
 void Aim::Draw()
 {
-    // Текущее положение мыши. Прицел закреплен за курсором мыши.
-	IPoint mouse_pos = Core::mainInput.GetMousePos();
+    // Current position of the mouse. The aim is attached to the mouse cursor.
+    IPoint mouse_pos = Core::mainInput.GetMousePos();
 	mPoint.x = static_cast<float>(mouse_pos.x);
 	mPoint.y = static_cast<float>(mouse_pos.y);
 
@@ -51,10 +51,10 @@ float* Bullet::RKFunc(float* xy_old)
 	float* y = new float[N_DIM];
 
 	y[0] = xy_old[1];
-    // изменение Vx
+    // Vx change
 	y[1] = -mCm * xy_old[1] - mKm * xy_old[3];
 	y[2] = xy_old[3];
-    // изменение Vy
+    // Vy change
 	y[3] = -G - mCm * xy_old[3] + mKm * xy_old[1];
 
 	return (y);
@@ -64,7 +64,7 @@ void Bullet::CalcAngles(float rotate_angle)
 {
 	float ang = rotate_angle * M_PI / PI_DEGREES;
 
-    // задание начального положения, начальной скорости, угла выстрела
+    // Initial position, initial speed, shot angle
     // x0
 	mXYold[0] = mCurrentPoint.x;
     // vx0
@@ -73,42 +73,42 @@ void Bullet::CalcAngles(float rotate_angle)
 	mXYold[2] = mCurrentPoint.y;
     // vy0
 	mXYold[3] = mVelocity * sin(ang) * (mInvert ? -1 : 1);
-    // угол выстрела
+    // Shot angle
 	mSystemAngle = rotate_angle;
 }
 
 void Bullet::Move()
 {
     /**
-    * В данном методе движение пули расчитывается как для объекта, запущенного под углом к горизонту.
-    * Но помимо действия силы тяжести, здесь также учитываются такие факторы,
-    * как сопротивление воздуха, угловая скорость и действие ветра.
-    * Из второго закона Ньютона a = F / m , откуда следует, что
+    * In this method, the movement of the bullet is calculated as for an object launched at an angle to the horizon.
+    * But in addition to the action of gravity, factors such as 
+    * air resistance, angular velocity and wind action are also taken into account.
+    * From the second law of Newton a = F / m, whence it follows that
     * d^2(x)/dt^2 = dvx/dt = (-(c/m) * vx - (k/m) * vy) * sqrt(vx * vx + vy * vy)
     * d^2(y)/dt^2 = dvy/dt = ((k/m) * vx - (c/m) * vy) * sqrt(vx * vx + vy * vy) - g ,
-    * где с = (1/2) * Сd * A * ro, k = (1/2) * Cl * A * ro.
-    * Здесь c - это коэффициент торможения из за сопротивления воздуха,
-    * k - коэффициент смещения из за угловой скорости и ветра
-    * A - площадь поперечного сечения пули( или любого друго объекта )
-    * ro - сопротивление воздуха
-    * Cd - параметр торможения, Cl - параметр смещения
+    * where СЃ = (1/2) * РЎd * A * ro, k = (1/2) * Cl * A * ro.
+    * c is the drag coefficient due to air resistance,
+    * k - offset factor due to angular velocity and wind
+    * A - the cross-sectional area of вЂ‹вЂ‹the bullet (or any other object)
+    * ro - air resistance
+    * Cd - deceleration parameter, Cl - offset parameter
     * Cd = 0.30 + (2.58 * 10^(-4)) * w
-    * Cl = 0.319 * (1 - exp(-2.48 * 10^(-3) * w)), где w - угловая скорость в рад/c
+    * Cl = 0.319 * (1 - exp(-2.48 * 10^(-3) * w)), where w is the angular velocity in rad / s
     *
-    * Далее, используется метод RK4 - один из семейства численных методов Рунге-Кутта.
-    * На каждом шаге n и при итерации времени dt, получается
-    * xy[n+1] = xy[n] + (1/6) * (k1 + 2*k2 + 2*k3 + k4), где
+    * Further, the RK4 method is used - one of the Runge-Kutta family of numerical methods.
+    * At each step n and at time iteration dt, it turns out
+    * xy[n+1] = xy[n] + (1/6) * (k1 + 2*k2 + 2*k3 + k4), РіРґРµ
     * k1 = dt * RK4(xy[n])
     * k2 = dt * RK4(xy[n] + k1 / 2)
     * k3 = dt * RK4(xy[n] + k2 / 2)
     * k4 = dt * RK4(xy[n] + k3)
     *
-    * xy - на каждой итерации n, это массив из 4 элементов:
-    * текущие координаты х и y и проекции скорости vx и vy
+    * xy - at each iteration n, this is an array of 4 elements:
+    * current x and y coordinates and velocity projections vx and vy
     */
 
-    // Если пуля не попала ни по одной мишени,
-    // то она считается использованной, когда упадет на землю
+    // If the bullet did not hit one target,
+    // it is considered used when it hits the ground.
 	if (mXYold[2] < -0.001)
 	{
 		mIsUsed = true;
@@ -165,11 +165,11 @@ void Bullet::SimpleDraw()
 
 void Bullet::Draw(ObjectsPool& shot_objects)
 {
-	// Перемещаем пулю на текущей итерации
+	// Move the bullet on the current iteration
 	Move();
 
-	// Проверка на попадание по какому либо из объектов. 
-	// Если было попадание, то пулю не рисуем.
+	// Check for hit on any of the objects.
+	// If there was a hit, then we do not draw a bullet.
 	bool used = shot_objects.CheckHitForObjects(mCurrentPoint, mSize, mXYold[1], mXYold[3], static_cast<int>(mDamage));
 	if (used)
 		mIsUsed = true;
@@ -233,20 +233,20 @@ PistolBullet::PistolBullet() : Bullet()
 	mDeltaY = dy;
 	mDamage = Damage::SMALL;
 
-    // угловая скорость
+    // Angular velocity
 	float rpm = 5.0f;
-    // преобразование в rad/s
+    // Convert to rad/s
 	float w = rpm * M_PI / 30.00;
-    // площадь поперечного сечения в м^2
+    // Cross sectional area in m ^ 2
 	float S = 0.0021;
-    // масса пули в кг
+    // Bullet mass in kg
 	float m = 0.018;
 
-	// коэффициент торможения
+    // Drag coefficient
 	float CD = 0.30 + 2.58e-4 * w;
 	mCm = 0.5 * CD * S * RHO / m;
 
-	// коэффициент сдвига
+    // Swift factor
 	float CL = 0.3187 * (1.0 - exp(-2.483e-3 * w));
 	mKm = 0.5 * CL * S * RHO / m; 
 }
@@ -356,13 +356,13 @@ void MachineGun::RotateGun()
 	float x2 = 1.0f;
 	float y1 = mAim.mPoint.y;
 	float y2 = 0.0f;
-	// Угол наклона вектора прицела
+    // Angle of the vector of the sight
 	auto angle = object_params::VectorsAngle(x1, x2, y1, y2);
 	mRotateAngle = angle * PI_DEGREES / M_PI;
 
 	mInvert = false;
-	// Поддержка инверсии: если оружие повернуть более, чем на 90 градусов, 
-	// то нужно повернуть текстуру вокруг Oy
+    // Inversion support: if the weapon is turned more than 90 degrees, 
+    // then it is necessary to rotate the texture around Oy
 	if (mRotateAngle > PI_DEGREES / 2)
 	{
 		mRotateAngle -= PI_DEGREES / 2;
@@ -370,7 +370,6 @@ void MachineGun::RotateGun()
 	}
 	mRotateAngle -= mCorrectAngle;
 	Render::device.MatrixRotate(math::Vector3(0, 0, 1), mRotateAngle);
-    // Если поворот оружие более чем на 90 градусов, то нужно повернуть текстуру вокруг оси Oy
     if (mInvert)
 		Render::device.MatrixRotate(math::Vector3(0, 1, 0), PI_DEGREES);
 }
@@ -404,14 +403,14 @@ bool MachineGun::Shot()
 	bullet->mTargetPoint = mAim.mPoint;
 	bullet->mInvert = mInvert;
 
-    // Начальное положение пули соответствует вершине текстуры, описывающей оружие,
-    // повернутой на угол относительно прицела
+    // The initial position of the bullet corresponds to the top of the texture describing the weapon, 
+    // turned at an angle relative to the aim
 	auto rotate_angle = mInvert ? mRotateAngle - PI_DEGREES / 2 : mRotateAngle;
 	auto angle = rotate_angle * M_PI / PI_DEGREES;
 	auto init_x = mWidth * math::cos(angle) - mHeight * math::sin(angle) + mX;
 	auto init_y = mHeight * math::cos(angle) + mWidth * math::sin(angle);
 
-	// Корректировка начального положения пули
+    // Adjusting the initial position of the bullet
 	auto init_point = FPoint(mInvert ? mWinWidth - init_x : init_x, abs(init_y));
 	bullet->mCurrentPoint = init_point;
 	bullet->CalcAngles(rotate_angle + mCorrectAngle);
@@ -423,7 +422,7 @@ bool MachineGun::Shot()
 
 size_t MachineGun::BulletsCount() 
 { 
-	// Перезарядка пушки занимает время, поэтому на 1 секунду показываем, что в магазине 0 патронов
+    // Recharging the gun takes time, so for 1 second we show that the magazine has 0 rounds
 	if (mIsRecharged && mRechargeTimer.getElapsedTime() < 1.0f)
 		return 0;
 

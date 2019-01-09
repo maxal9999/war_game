@@ -1,7 +1,7 @@
 /**
  * \file
- * \brief Имплементация классов для описания мишеней
- * \author Максимовский А.С.
+ * \brief Implementing classes to describe targets
+ * \author Maksimovskiy A.S.
  */
 
 #include "stdafx.h"
@@ -11,10 +11,10 @@
 #include "ClassHelpers.h"
 #include "ObjectsForShot.h"
 
-// Дискрет времени
+// Time discrete
 static float TIME_DELTA = 0.03f;
 
-// Коэффициент взаимодействия между мишенями
+// Target interaction ratio
 const float FORCE_K = 50;
 
 IObjectForShot::IObjectForShot(FPoint&& init_point)
@@ -46,11 +46,11 @@ void IObjectForShot::InitVelocity(int min, int max)
 
 void IObjectForShot::InteractionWithOthers(const std::unique_ptr<IObjectForShot>& other)
 {
-    // Расстояние между мишенями
+    // Distance between targets
 	float d = mPoint.GetDistanceTo(other->mPoint);
 	float r2 = other->mRadius;
 
-    // Если расстояние больше, чем сумма размером мишеней, то взаимодействия нет
+    // If the distance is greater than the sum of the size of the targets, then there is no interaction
 	if (d >= mRadius + r2)
 		return;
 
@@ -64,14 +64,14 @@ void IObjectForShot::InteractionWithOthers(const std::unique_ptr<IObjectForShot>
 	float& vx2 = other->mVelocity.mVx;
 	float& vy2 = other->mVelocity.mVy;
 
-    // Расчет изменения проекций скорости обеих мишеней.
-    // F - сумма сил, действующих на тело. Принимается, что это сила упругости.
-    // Формула: F = k * delta_x, где delta_x - смещение при упругом ударе
-    // a = F / m, где a - ускорение, m - масса тела.
-    // Допустим, что масса линейно зависит от размером, и приблизетельно m ~ r
-    // Подставляя все, a = k * delta_x / r
-    // Проекции: ax = a * (x1 - x2) / d, где d - расстояние между мишенями
-    //           ay = a * (y1 - y2) / d
+    // Calculation of changes in the projections of the speed of both targets.
+    // F - the sum of the forces acting on the body. Accepted that this is the force of elasticity.
+    // Formula: F = k * delta_x, where delta_x is the displacement during elastic impact.
+    // a = F / m, where a is acceleration, m is body mass.
+    // Suppose that the mass is linearly dependent on the size, and approximately m ~r
+    // Substituting everything, a = k * delta_x / r
+    // Projections: ax = a * (x1 - x2) / d, where d is the distance between the targets
+    //              ay = a * (y1 - y2) / d
 	float f = FORCE_K * (mRadius + r2 - d);
 	vx1 += f * (x1 - x2) / d / mRadius * TIME_DELTA;
 	vy1 += f * (y1 - y2) / d / mRadius * TIME_DELTA;
@@ -81,22 +81,22 @@ void IObjectForShot::InteractionWithOthers(const std::unique_ptr<IObjectForShot>
 
 bool IObjectForShot::InteractionWithOthers(const FPoint& other, int size, float vx, float vy, int damage)
 {
-    // Расстояние от мишени до пули
+    // Distance between target and bullet
 	float d = mPoint.GetDistanceTo(other);
 
-    // Если расстояние больше размером мишени, то взаимодействия нет
+    // If the distance is greater than the target size, then there is no interaction
 	if (d >= mRadius)
 		return false;
 
-	// Уравнение прямой, у которой направляющий вектор будет (vx, vy)
-	// будет vy * x - vx * y + (vx * other.y + vy * other.x) = 0.
-	// Поэтому нужно проверить, что точка mPoint примерно лежит на этой прямой
+    // The equation of a line whose direction vector is (vx, vy) 
+    // will be vy * x - vx * y + (vx * other.y + vy * other.x) = 0.
+    // Therefore, it is necessary to check that the mPoint point lies approximately on this straight line.
 	float c = vx * other.y + vy * other.x;
 	float koeff = vx * mPoint.y / (vy * mPoint.x + c);
 	if (abs(koeff) > size)
 		return false;
 
-    // Уменьшаем число жизней мишени в зависимости от урона пули
+    // Reduce the number of target lives depending on bullet damage
 	mHP -= damage;
 	return true;
 }
@@ -194,10 +194,10 @@ void ObjectsPool::Init(int delta_width, int delta_height)
 		ObjectType obj_type = i >= 10 ? ObjectType::BOMB : ObjectType::SUPER_BOMB;
 		auto& inst = RandomGenerator::Instance();
 
-        // Задание начального положения мишеней
+        // Setting the initial position of the targets
 		FPoint point(inst.GetRealValue(0, static_cast<int>(mWinWidth * 0.7)), 
 			         inst.GetRealValue(mDeltaHeight, static_cast<int>(mWinHeight * 0.7)));
-        // Заполнение вектора указателей на мишени новым объектом
+        // Filling the vector of pointers to the target with a new object
 		mObjects[i] = IObjectForShot::CreateObject(std::move(point), obj_type);
 	}
 

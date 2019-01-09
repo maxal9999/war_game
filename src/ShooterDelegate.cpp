@@ -6,12 +6,6 @@
 
 void ShooterDelegate::GameContentSize(int deviceWidth, int deviceHeight, int &width, int &height)
 {
-	//
-	// Здесь задаётся размер игрового экрана в логических единицах.
-	//
-	// Это значит, что и в оконном, и в полноэкранном режиме размер экрана
-	// всегда будет равен WINDOW_WIDTH x WINDOW_HEIGHT "пикселей".
-	//
 	auto& inst = InputParser::Instance();
 	width = inst.Get(std::string("Width"));
 	height = inst.Get(std::string("Height"));
@@ -24,19 +18,11 @@ void ShooterDelegate::ScreenMode(DeviceMode &mode)
 
 void ShooterDelegate::RegisterTypes()
 {
-	//
-	// Чтобы можно было декларативно использовать виджет в xml по имени,
-	// его необходимо зарегистрировать таким образом.
-	//
 	REGISTER_WIDGET_XML(ShooterWidget, "ShooterWidget");
 }
 
 void ShooterDelegate::LoadResources()
 {
-	//
-	// Обычно в этом методе выполняется скрипт, в котором определяется,
-	// какие ресурсы нужно загрузить и какой игровой слой положить на экран.
-	//
 	Core::LuaExecuteStartupScript("start.lua");
 }
 
@@ -51,9 +37,6 @@ void ShooterDelegate::OnPostDraw()
 	if (!Render::isFontLoaded("arial"))
 		return;
 
-	//
-	// Перед вызовом метода Render::PrintString() нужно привязать нужный шрифт
-	//
 	Render::BindFont("arial");
 
 	int dy = Render::getFontHeight();

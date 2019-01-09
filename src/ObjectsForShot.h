@@ -2,21 +2,21 @@
 
 /**
  * \file
- * \brief Классы для описания мишеней
- * \author Максимовский А.С.
+ * \brief Classes for describing targets
+ * \author Maksimovskiy A.S.
  */
 
 #include <memory>
 #include <atomic>
 
-// Тип мишени.
+// Target type
 enum class ObjectType
 {
 	BOMB,
 	SUPER_BOMB
 };
 
-// Квант скорости
+// Velocity type
 enum class VelocityType
 {
 	FIRST = 10,
@@ -25,7 +25,7 @@ enum class VelocityType
 	FOURTH = 70
 };
 
-// Количество жизней мишеней
+// Target hit points
 enum class HitPoints
 {
 	PEASANT = 20,
@@ -33,72 +33,71 @@ enum class HitPoints
 	KNIGHT = 30
 };
 
-// Скорость. Содержит 2 параметра - проекции на оси Ox и Oy
+// Velocity. Two params - projections on the axes of Ox and Oy
 struct Velocity
 {
 	float mVx;
 	float mVy;
 };
 
-// Базовый класс для создания мишеней
+// Base class for create targets
 struct IObjectForShot
 {
 	IObjectForShot(FPoint&& init_point);
 	virtual ~IObjectForShot() = default;
 
-	// Фабрика
+	// Factory
 	static std::unique_ptr<IObjectForShot> CreateObject(FPoint&& init_point, ObjectType type);
 
-	// Методы взаимодействия с другими объектами
-    // Первый имплементирует логику взаимодействия с другими мишенями
-    // Второй - логику взаимодействия с пулями
+    // Methods of the interaction with another objects.
+    // The first implements the logic of interaction with another targets.
+    // The second - the logic of interaction with bullets.
 	void InteractionWithOthers(const std::unique_ptr<IObjectForShot>& other);
 	bool InteractionWithOthers(const FPoint& other, int size, float vx, float vy, int damage);
 
-	// Метод, реализующий передвижение мишеней
+	// Method to implements the movement of targets
 	void MoveObject(int min_width, int max_width, int min_height, int max_height);
 
-	// Метод для отрисовки объектов
+    // Method to draw the targets
 	void Draw();
 
-	// Текстура
+	// Texture
 	Render::Texture* mTexture;
 
-	// Положение мишени
+	// Target position
 	FPoint mPoint;
 
-	// Скорость
+	// Velocity
 	Velocity mVelocity;
 
-	// Размер
+	// Size
 	int mRadius;
 
-	// Количество жизней.
-	// Атомарный параметр, так как несколько пуль одновременно могут попасть в мишень
-	std::atomic<int> mHP;
+	// Hit points
+	int mHP;
 protected:
-	// Корректировка координат
+	// Coordinate adjustment
 	float mDeltaX;
 	float mDeltaY;
 
-    // Тип мишени
+    // Aim type
 	ObjectType mObjectType;
 
-    // Метод для генерации первоначальной скорости мишени
+    // Method to generate the original target velocity
 	void InitVelocity(int min, int max);
 
-	// Метод, описывающий логику перемещения
+	// Method to describe the logic of movement
 	virtual void Move(float& x, float& y, float& vx, float& vy);
 };
 
-// Структура, описывающая объект типа Bomb
+// Structure describing an object of type Bomb
 struct Bomb : public IObjectForShot
 {
 	Bomb(FPoint&& init_point);
 	virtual ~Bomb() = default;
 };
 
-// Структура, описывающая объект типа SuperBomb
+// Structure describing an object of type SuperBomb
 struct SuperBomb : public IObjectForShot
 {
 	SuperBomb(FPoint&& init_point);
@@ -111,47 +110,45 @@ private:
 
 using objects = std::vector<std::unique_ptr<IObjectForShot>>;
 
-// Класс, отвечающий за управление, хранение и координацию мишеней
+// Class responsible for the management, storage and coordination of targets
 class ObjectsPool
 {
 public:
 	ObjectsPool() = default;
 
-    // Метод для первоначального задания параметров.
-    // Инициализации реализована не в констукторе,
-    // потому что входные параметры известны не сразу
+    // Method for initial setting of params
 	void Init(int delta_width, int delta_height);
 
-	// Метод для удаления всех "мертвых" мишеней
+    // Method to remove all dead targets
 	void DeleteDeadObjects();
 
-    // Метод для отрисовки всех мишеней
+    // Method to draw all targets
 	void Draw();
 
-    // Проверка попадания пули с положением в точке other по какой либо из мишеней
+    // Checking the hit of a bullet with a position at the point of other for any of the targets
 	bool CheckHitForObjects(const FPoint& other, int size, float vx, float vy, int damage);
 
 	bool Empty() { return mObjects.size() == 0; }
 
 	void Clear() { mObjects.clear(); }
 private:
-    // Метод для расчета текущих координат мишеней
+    // Method for calculating current target coordinates
 	void CalcCoordinates();
 
-    // Базовый вектор хранения указателей на объекты мишеней
+    // Base vector storage of pointers to target objects
 	objects mObjects;
 
-    // Ширина и высота главного окна
+    // Width and height of the main window
 	int mWinWidth;
 	int mWinHeight;
 
-    // Ширина и высота смещения относительно стенок главного окна.
-    // Необходимы для определения пределов перемещения мишеней.
+    // Width and height of the offset relative to the walls of the main window.
+    // It is necessary to determine the limits of movement of the targets.
 	int mDeltaWidth;
 	int mDeltaHeight;
 
-	// Таймер для расчета времени
+	// Timer to calculate the time of movement of the targets
 	Core::Timer mObjectTimer;
-	// Предыдущее значение времени
+    // Previous time
 	float mPrevTime;
 };
